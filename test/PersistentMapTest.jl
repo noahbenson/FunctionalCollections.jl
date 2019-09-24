@@ -171,3 +171,106 @@ const PHM = PersistentHashMap
                 PHM((1,1), (2, 3), (3, 4))
     end
 end
+
+const PDM = PersistentDefaultMap
+
+@testset "Persistent Default Maps" begin
+
+    @testset "constructor" begin
+        hashmap = PDM{Int, Int}()
+        @test length(hashmap) == 0
+        @test length(PDM((1, 1), (2, 2), (3, 3))) == 3
+        @test length(PDM(x=1, y=2, z=3)) == 3
+    end
+
+    @testset "equality" begin
+        @test PDM{Int, Int}() == PDM{Int, Int}()
+        @test PDM{Int, Int}() == PDM{String, String}()
+
+        m1 = PDM{Int, Int}()
+        m2 = PDM{Int, Int}()
+        @test assoc(m1, 1, 100) == assoc(m2, 1, 100)
+        @test assoc(m1, 1, 100) != (assoc(m2, 1, 200))
+        @test assoc(m1, 1, 100) != (assoc(m2, 2, 100))
+
+        m3 = PDM([(1 => 10), (2 => 20), (3 => 30)])
+        m4 = PDM((3, 30), (2, 20), (1, 10))
+        @test m3 == m4
+        @test m3 != (m1)
+
+        @test m3 == Dict(1 => 10, 2 => 20, 3 => 30)
+    end
+
+    @testset "assoc" begin
+        m = PDM{Int, String}()
+        @test assoc(m, 1, "one")[1] == "one"
+        @test try m[1]; false catch e true end
+
+        m = PDM{Int, String}()
+        m = assoc(m, 1, "one")
+        @test assoc(m, 1, "foo")[1] == "foo"
+    end
+
+    @testset "covariance" begin
+        m = PDM{Any, Any}()
+        @test assoc(m, "foo", "bar") == (Dict("foo" => "bar"))
+    end
+
+    @testset "dissoc" begin
+        m = PAM((1, "one"))
+        m = dissoc(m, 1)
+        @test try m[1]; false catch e true end
+
+        m = PDM((1, "one"), (2, "two"))
+        @test dissoc(m, 1) == PDM((2, "two"))
+    end
+
+    @testset "get" begin
+        m = PDM{Int, String}()
+        @test get(m, 1, "default") == "default"
+        m = assoc(m, 1, "one")
+        @test get(m, 1, "default") == "one"
+        m = assoc(m, 1, "newone")
+        @test get(m, 1, "default") == "newone"
+        @test try get(m, 2); false catch e true end
+    end
+
+    @testset "haskey" begin
+        m = PDM{Int, String}()
+        @test !haskey(m, 1)
+        m = assoc(m, 1, "one")
+        @test haskey(m, 1)
+        @test !haskey(m, 2)
+    end
+
+    @testset "haskey dissoc" begin
+        m = PDM{Int, String}()
+        m = assoc(m, 1, "one")
+        m = dissoc(m, 1)
+        @test !haskey(m, 1)
+    end
+
+    @testset "map" begin
+        m = PDM((1, 1), (2, 2), (3, 3))
+        @test map((kv) -> (kv[1], kv[2]+1), m) == PDM((1, 2), (2, 3), (3, 4))
+    end
+
+    @testset "filter" begin
+        @test filter((kv) -> iseven(kv[2]), PDM((1, 1), (2, 2))) == PDM((2, 2))
+    end
+
+    @testset "merge" begin
+        @test merge(PDM((1, 1), (2, 2)), PDM((2, 3), (3, 4))) ==
+                PDM((1,1), (2, 3), (3, 4))
+    end
+
+    @testset "promotion" begin
+        m = PDM{Int,Int}()
+        for k in 1:100
+            m = assoc(m, k, k)
+        end
+        @test isa(m, PHM)
+        @test length(m) == 100
+    end
+end
+
