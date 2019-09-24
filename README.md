@@ -1,35 +1,27 @@
-# FunctionalCollections
+# FunctionalUtilities
 
-[![Build Status](https://travis-ci.org/JuliaCollections/FunctionalCollections.jl.svg)](https://travis-ci.org/JuliaCollections/FunctionalCollections.jl)
-[![FunctionalCollections](http://pkg.julialang.org/badges/FunctionalCollections_0.3.svg)](http://pkg.julialang.org/?pkg=FunctionalCollections&ver=0.3)
+Functional and persistent data structures for Julia and tools for using them.
+This library is a fork of
+[FunctionalCollections.jl](https://github.com/JuliaCollections/FunctionalCollections.jl), which
+appears to be no-longer maintained.  This library is currently in a highly experimental status.
 
-Functional and persistent data structures for Julia. This is a work in
-progress and is currently not optimized for performance.
-
-**NOTE:** The `master` branch of `FunctionalCollections` is for Julia v0.7 and up. For earlier Julia versions please use FunctionalCollections v0.3.x.
-
-### Installation
-
-```.jl
-julia> Pkg.add("FunctionalCollections")
-
-julia> using FunctionalCollections
-```
+**Note**: Julia 0.7.0 or higher is required.
 
 ### Exports
 
 ```
-Collection         | Abbrev
+Collection           | Abbrev
 ----------------------------
-PersistentVector   | pvec
-PersistentHashMap  | phmap
-PersistentArrayMap |
-PersistentSet      | pset
-PersistentList     | plist
-PersistentQueue    | pqueue
+PersistentVector     | pvec
+PersistentHashMap    | phmap, pmap
+PersistentArrayMap   | pamap, pmap
+PersistentDefaultMap | pmap
+PersistentSet        | pset
+PersistentList       | plist
+PersistentQueue      | pqueue
 ```
 
-[src/FunctionalCollections.jl](https://github.com/JuliaLang/FunctionalCollections.jl/blob/master/src/FunctionalCollections.jl)
+[src/Immutables.jl](https://github.com/noahbenson/Immutables/blob/master/src/Immutables.jl)
 contains all of the package's exports, though many built-ins are also
 implemented.
 
@@ -177,6 +169,12 @@ julia> m == dissoc(m2, 2)
 true
 ```
 
+### PersistentDefaultMap
+
+`PersistentDefaultMap` objects are returned by the `pmap` function and are
+identical to `PersistentArrayMap` objects in behavior except that when they
+grow to a size of 64 or greater they instead return a PersistentHashMap.
+
 ### PersistentSet
 
 PersistentSets are immutable sets. Along with the usual set interface,
@@ -185,6 +183,8 @@ PersistentSets are immutable sets. Along with the usual set interface,
 element removed (disjoined).
 
 ### TODO:
+
+(All of the below was from the original FunctionalCollections.jl repo; some of it appears already implemented.)
 
 #### General
 
