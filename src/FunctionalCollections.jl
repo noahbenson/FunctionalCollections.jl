@@ -19,7 +19,7 @@ include("PersistentMap.jl")
 
 const phmap = PersistentHashMap
 
-export PersistentArrayMap,
+export PersistentArrayMap, pmap,
        PersistentHashMap, phmap,
        assoc,
        dissoc
