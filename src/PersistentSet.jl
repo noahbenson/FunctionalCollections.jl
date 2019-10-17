@@ -1,9 +1,12 @@
-struct PersistentSet{T}
-    dict::PersistentHashMap{T, Nothing}
+abstract type PersistentSet{T} <: AbstractSet{T} end
+
+struct PersistentHashSet{T}
+    dict::PersistentHashDict{T, Nothing}
     # TODO: this constructor is inconsistent with everything else
     # and with Set in base; probably good to deprecate.
-    PersistentSet{T}(d::PersistentHashMap{T, Nothing}) where {T} = new{T}(d)
-    PersistentSet{T}() where {T} = new{T}(PersistentHashMap{T, Nothing}())
+    #PersistentSet{T}(d::PersistentHashDict{T, Nothing}) where {T} = new{T}(d)
+    PersistentSet{T}() where {T} = new{T}(PersistentHashDict{T, Nothing}())
+    PersistentSet{T}(els...) where {T} = new{T}(pmap{T,Nothing}([el=>nothing for el in els]...)
 end
 PersistentSet{T}(itr) where {T} = _union(PersistentSet{T}(), itr)
 PersistentSet() = PersistentSet{Any}()
